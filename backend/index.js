@@ -21,10 +21,11 @@ app.use(cors({
 }))
 
 
-app.use("api/auth",authRoutes)
+app.use("/api/auth",authRoutes)
 
 app.listen(port,()=>{
     connectDb()
-     console.log("server started")
+      
+     console.log("server started at port" + port)
 })
 
