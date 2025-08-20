@@ -2,6 +2,7 @@ import User from "../models/UserModel.js";
 import validator from "validator"
 import { genToken } from "../config/token.js";
 import bcrypt from "bcrypt"
+import { removeFromCloudinary, uploadOnCloudinary } from "../config/cloudinary.js";
 
 
 export const signUp = async (req,res)=>{
@@ -116,14 +117,63 @@ export const updateProfile=async(req,res)=>{
     try{
         const userId=req.userId
         const {firstName,lastName,color}=req.body
+        
         console.log(lastName)
         if(!firstName || !lastName ){
             return res.status(400).json({message:"firstname,lastname and color are required"})
         }
+        console.log(userId)
+        console.log(firstName)
+        console.log(lastName)
+        console.log(color)
         const userData=await User.findByIdAndUpdate(userId,{firstName,lastName,color,profileSetup:true},{new:true,runValidators:true})
+        console.log(userData)
             return res.status(200).json(userData)
     }catch(error){
           console.log(error)
           return res.status(500).json({message:"internal server error"})
     }
+}
+
+
+export const addProfileImage=async (req,res,next)=>{
+    console.log("add profile reached")
+    let image1;
+    console.log(req.file)
+    try{
+    if(req.file){
+        image1=await uploadOnCloudinary(req.file.path)    
+
+        const user= await User.findByIdAndUpdate(req.userId,{image:image1},{new:true}).select("-password")
+        console.log(user)
+        return res.status(200).json(user)     
+    }else{
+        res.status(400).send("file is required")
+    }
+}catch(error){
+     console.log("add-profile error"+error.message)
+     return res.status(500).json("internal server error")
+}
+}
+
+export const removeProfileImage=async(req,res,next)=>{
+    try{
+   const {userId}=req
+   const user=await User.findById(userId)
+
+   if(!user){
+    return res.status(404).json({message:"user not found"});
+   }
+   if(user.image){
+     const result=removeFromCloudinary(user.image)
+     console.log("cloudinary delete complete")
+   }
+   user.image=null
+   await user.save()
+   const updatedUser = await User.findById(userId).select("-password");
+   return res.status(200).json(updatedUser)
+}catch(error){
+       console.log({error})
+       return res.status(500).json({message:"internal server error"})
+   }
 }

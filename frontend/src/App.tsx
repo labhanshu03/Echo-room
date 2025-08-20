@@ -21,7 +21,7 @@ function App() {
     const getUserData=async()=>{
        console.log("dfaadfs")
       try{
-        console.log(serverUrl)
+        
           const response=await axios.get(`${serverUrl}/api/auth/userinfo`,{withCredentials:true})
         console.log("thisis the response"+response.data +"fsda")
         console.log(response.data)

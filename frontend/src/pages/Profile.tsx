@@ -1,6 +1,6 @@
 // import { useAppStore } from '@/store'
 import { useUserStore } from '@/store/slices/auth-slice'
-import React,{useContext, useState} from 'react'
+import React,{useContext, useEffect, useState} from 'react'
 import {IoArrowBack} from "react-icons/io5"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { getColor } from '@/lib/utils'
@@ -11,6 +11,7 @@ import {toast} from "sonner"
 import { authDataContext } from '@/context/AuthContext'
 import axios from "axios"
 import { useNavigate } from 'react-router-dom'
+import { useRef } from 'react'
 
 function Profile() {
   const {serverUrl}=useContext(authDataContext)!
@@ -19,9 +20,21 @@ function Profile() {
   const {userInfo,setUserInfo} =useUserStore()
   const [firstName,setFirstName]=useState("")
   const [lastName,setLastName]=useState("")
-  const [image,setImage]=useState(null)
+  const [image,setImage]=useState<string | null>(null)
   const [selectedColor,setSelectedColor]=useState(0)
   const [hovered,setHovered]=useState(false)
+  const fileInputRef=useRef<HTMLInputElement>(null)
+
+
+
+  useEffect(()=>{
+    if(userInfo?.profileSetup){
+      setFirstName(userInfo?.firstName? userInfo.firstName:"")
+      setLastName(userInfo?.lastName?userInfo.lastName :"")
+      setSelectedColor(userInfo?.color?userInfo.color:0)
+      if(userInfo?.image) setImage(userInfo?.image)
+    }
+  },[userInfo])
 
 
   const validateProfile=()=>{
@@ -41,6 +54,8 @@ function Profile() {
    if(validateProfile()){
     try{
            const response=await axios.post(`${serverUrl}/api/auth/update-profile`,{firstName,lastName,color:selectedColor},{withCredentials:true})
+           console.log("this is the response after profile setup"+ response.data)
+           console.log(response.data)
 
            if(response.status==200){
             setUserInfo(response.data)
@@ -54,12 +69,59 @@ function Profile() {
    }
   }
 
+  const handleNavigate=()=>{
+    if(userInfo?.profileSetup){
+      navigate("/chat")
+    }else{
+      toast.error("please setup profile")
+    }
+  }
+
+  const handleFileInputClick=()=>{
+    if(fileInputRef.current){
+    fileInputRef.current.click()
+    }
+  }
+
+  const handleImageChange= async (event:React.ChangeEvent<HTMLInputElement>)=>{
+    const file =event.target.files?.[0];
+    if(file) setImage(URL.createObjectURL(file))
+    
+    if(file){
+      const formData=new FormData()
+      formData.append("profile-image",file)
+      const response=await axios.post(`${serverUrl}/api/auth/add-profile-image`,formData,{withCredentials:true})
+      if(response.status==200 && response.data.image){
+           setUserInfo(response.data)
+           toast.success("Image updated successfully")
+      }
+    }
+  }
+
+  const handleDeleteImage=async()=>{
+    console.log("delete image called")
+    try{
+      const response=await axios.delete(`${serverUrl}/api/auth/remove-profile-image`,{withCredentials:true})
+  
+      if (response.status === 200 ) {
+          setUserInfo(response.data)
+          toast.success("Image removed successfully")
+          setImage(null)
+    }
+
+
+
+  }
+  catch(error){
+      console.log(error)
+    }
+  }
 
   return (
     
     <div className='bg-[#1b1c24] h-[100vh] flex items-center justify-center flex-col gap-10'>
       <div className='flex flex-col gap-10 w-[80vw] md:w-max'>
-        <div>
+        <div onClick={handleNavigate}>
           <IoArrowBack className='text-4xl lg:text-6xl text-white/90 cursor-pointer'/>
         </div>
         <div className='h-full w-32 md:h-48 relative flex items-center justify-center ' onMouseEnter={()=>setHovered(true)} onMouseLeave={()=>setHovered(false)}>
@@ -72,12 +134,12 @@ function Profile() {
          </Avatar>
          {
           hovered&& (
-            <div className='absolute inset-0 flex items-center justify-center bg-black/50 ring-fuchsia-50 rounded-full'>
+            <div className='absolute inset-0 flex items-center justify-center bg-black/50 ring-fuchsia-50 rounded-full' onClick={image?handleDeleteImage:handleFileInputClick}>
              {image? <FaTrash className='text-white text-3xl cursor-pointer '/>:<FaPlus className='text-white text-3xl cursor-pointer '/>}
             </div>
           )
          }
-         {}
+         <input type="file" ref={fileInputRef} className='hidden' onChange={handleImageChange} name="profile-image" accept='.png ,.jpg, .jpeg, .svg'/>
         </div>
         <div className='flex min-w-32 md:min-w-64 flex-col gap-5 text-white items-center justify-center'>
           <div className='w-full'>
