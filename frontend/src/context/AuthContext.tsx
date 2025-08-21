@@ -1,8 +1,9 @@
 
-import React ,{ createContext, type ReactNode} from 'react'
+import React ,{ createContext, useState, type ReactNode} from 'react'
 
 interface AuthContextType{
   serverUrl:string
+
 }
 
 interface AuthProviderProps{
@@ -16,8 +17,12 @@ export const authDataContext=createContext<AuthContextType|undefined>(undefined)
 function AuthContext({children}:AuthProviderProps) {
 
     const serverUrl="http://localhost:8000"
+      const [authChecked, setAuthChecked] = useState(false)
+
     const value={
-        serverUrl
+        serverUrl,
+        authChecked,
+        setAuthChecked
     }
   return (
   <div>

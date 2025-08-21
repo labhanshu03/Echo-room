@@ -4,7 +4,7 @@ import {create} from "zustand"
 
 
 
-interface userType{
+export interface userType{
     _id:string,
     email:string,
     password:string,
@@ -17,6 +17,33 @@ interface userType{
     updatedAt?:Date
 }
 
+export interface chatSlice{
+    selectedChatType:undefined |string
+    selectedChatData:any
+    selectedChatMessage:any[],
+    setSelectedChatType:(selectedChatType:string|undefined)=>void
+    setSelectedChatData:(selectedChatData:any)=>void
+    setSelectedChatMessages:(selectedChatMessage:any[])=>void
+    closeChat:()=>void
+}
+
+
+export const useChatStore=create<chatSlice>((set,get)=>({
+   selectedChatType:undefined,
+   selectedChatData:undefined,
+   selectedChatMessage:[],
+   setSelectedChatType:(selectedChatType)=>set({selectedChatType}),
+   setSelectedChatData: (selectedChatData) => set({ selectedChatData }),
+     setSelectedChatMessages: (selectedChatMessages) =>
+    set({ selectedChatMessage: selectedChatMessages }),
+     closeChat: () =>
+    set({
+      selectedChatType: undefined,
+      selectedChatData: undefined,
+      selectedChatMessage: [],
+    }),
+
+}))
 
 
 export interface AuthSlice{
@@ -30,6 +57,7 @@ export const useUserStore=create<AuthSlice>((set)=>({
    
 }))
 
+  
 
 
 

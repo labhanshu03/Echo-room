@@ -5,6 +5,8 @@ import cookieParser from "cookie-parser"
 import { connect } from "mongoose"
 import { connectDb } from "./config/db.js"
 import authRoutes from "./routes/authRoutes.js"
+import contactsRoutes from "./routes/contactRoutes.js"
+import setupSocket from "./socket.js"
 
 dotenv.config()
 
@@ -22,10 +24,14 @@ app.use(cors({
 
 
 app.use("/api/auth",authRoutes)
+app.use("/api/contacts",contactsRoutes)
 
-app.listen(port,()=>{
+const server=app.listen(port,()=>{
     connectDb()
       
      console.log("server started at port" + port)
 })
 
+
+
+setupSocket(server)

@@ -25,12 +25,14 @@ import {toast} from "sonner"
 import ContactsContainer from "./chat/components/contacts-container/ContactsContainer.tsx"
 import EmptyChatContainer from "./chat/components/empty-chat-container/EmptyChatContainer.tsx"
 import ChatContainer from "./chat/components/chat-container/ChatContainer.tsx"
-import { useUserStore } from '@/store/slices/auth-slice'
+import { useChatStore, useUserStore } from '@/store/slices/auth-slice'
 
 function Chat() {
+  const {selectedChatType}=useChatStore()
   const {userInfo} =useUserStore()
   const navigate=useNavigate()
   useEffect(()=>{
+    console.log(userInfo +"this is the chat ")
     if(!userInfo?.profileSetup){
       toast("Please setup profile to continue")
       navigate("/profile")
@@ -40,8 +42,10 @@ function Chat() {
   return (
     <div className='flex h-[100vh] text-white overflow-hidden'>
      <ContactsContainer/>
-     {/* <EmptyChatContainer/> */}
-     <ChatContainer/>
+     {selectedChatType===undefined ? <EmptyChatContainer/>:<ChatContainer/>
+     }
+    
+     
 
     </div>
   )
