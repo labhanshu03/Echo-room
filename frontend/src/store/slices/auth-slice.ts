@@ -25,6 +25,8 @@ export interface chatSlice{
     setSelectedChatData:(selectedChatData:any)=>void
     setSelectedChatMessages:(selectedChatMessage:any[])=>void
     closeChat:()=>void
+     addMessage:(message:any)=>void
+   
 }
 
 
@@ -36,12 +38,34 @@ export const useChatStore=create<chatSlice>((set,get)=>({
    setSelectedChatData: (selectedChatData) => set({ selectedChatData }),
      setSelectedChatMessages: (selectedChatMessages) =>
     set({ selectedChatMessage: selectedChatMessages }),
+    addMessage: (message) => {
+    const selectedChatMessages = get().selectedChatMessage;
+    const selectedChatType = get().selectedChatType;
+    
+    set({
+      selectedChatMessage: [
+        ...selectedChatMessages,
+        {
+          ...message,
+          recipient:
+            selectedChatType === "channel"
+              ? message.recipient
+              : message.recipient._id,
+          sender:
+            selectedChatType === "channel"
+              ? message.sender
+              : message.sender._id,
+        }
+      ],
+    });
+   },
      closeChat: () =>
     set({
       selectedChatType: undefined,
       selectedChatData: undefined,
       selectedChatMessage: [],
     }),
+    
 
 }))
 

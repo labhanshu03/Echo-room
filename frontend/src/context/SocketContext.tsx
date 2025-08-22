@@ -33,6 +33,22 @@ export const SocketProvider = ({ children }: SocketProviderProps) => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const { userInfo } = useUserStore();
+  const {selectedChatData,selectedChatType,addMessage}=useChatStore()
+
+          const handleRecieveMessage=(message:any)=>{
+             console.log("recieved message from handleRecieve Message")
+             console.log(selectedChatType)
+           
+
+           if(selectedChatType!==undefined && (selectedChatData._id ===message.sender._id  || selectedChatData._id===message.recipient._id)){
+            
+            console.log("message recieved",message)
+            addMessage(message)
+                                
+           }
+      }
+  
+    
 
   useEffect(() => {
     if (userInfo) {
@@ -59,13 +75,10 @@ export const SocketProvider = ({ children }: SocketProviderProps) => {
       // Update state with socket instance
       setSocket(socketInstance);
 
-    //   const handleRecieveMessage=(message)=>{
-    //        const {selectedChatData,selectedChatType}=useChatStore()
 
-    //        if(selectedChatType!==undefined && selectedChatData._id ===message.sender._id   )
-    //   }
+      
 
-    //   socketInstance.on("recieveMessage",handleRecieveMessage)
+    
 
       // Cleanup function
       return () => {
@@ -82,6 +95,29 @@ export const SocketProvider = ({ children }: SocketProviderProps) => {
       }
     }
   }, [userInfo]);
+
+  useEffect(() => {
+    if (socket) {
+      const handleRecieveMessage = (message: any) => {
+        console.log("recieved message from handleRecieve Message");
+        console.log(selectedChatType); // This will now be the correct value
+
+        if (selectedChatType !== undefined && (selectedChatData?._id === message.sender._id || selectedChatData?._id === message.recipient._id)) {
+          console.log("message recieved", message);
+          addMessage(message);
+        }
+      };
+
+      // Register the listener
+      socket.on("recieveMessage", handleRecieveMessage);
+
+      // Cleanup: remove the old listener
+      return () => {
+        socket.off("recieveMessage", handleRecieveMessage);
+      };
+    }
+  }, [socket, selectedChatType, selectedChatData, addMessage]); 
+
 
 
   return (

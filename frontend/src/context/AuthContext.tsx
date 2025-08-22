@@ -5,12 +5,9 @@ interface AuthContextType{
   serverUrl:string
 
 }
-
 interface AuthProviderProps{
   children:ReactNode
 }
-
-
 
 export const authDataContext=createContext<AuthContextType|undefined>(undefined)
 

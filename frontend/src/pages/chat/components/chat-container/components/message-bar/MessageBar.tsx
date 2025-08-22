@@ -5,10 +5,15 @@ import { RiEmojiStickerLine } from 'react-icons/ri'
 import { useRef } from 'react'
 import EmojiPicker, { Theme }  from "emoji-picker-react"
 import type { EmojiClickData } from 'emoji-picker-react'
+import { useChatStore, useUserStore } from '@/store/slices/auth-slice'
+import { useSocket } from '@/context/SocketContext'
 function MessageBar() {
     const [message,setMessage]=useState("")
     const emojiRef=useRef<HTMLDivElement>(null)
     const [emojiPickerOpen,setEmojiPickerOpen]=useState(false)
+    const {selectedChatType,selectedChatData}=useChatStore()
+    const socket=useSocket()
+    const {userInfo}=useUserStore()
 
     const handleAddEmoji=async(emoji:EmojiClickData)=>{
         setMessage((msg)=>msg+emoji.emoji)
@@ -28,6 +33,21 @@ function MessageBar() {
     },[emojiRef])
 
     const handleSendMessage=async()=>{
+      console.log(selectedChatType + "this is in handle Send message")
+      
+      if(selectedChatType==="contact"){
+       
+           socket.socket?.emit("sendMessage",{
+            sender:userInfo?._id,
+            content:message,
+            recipient:selectedChatData._id,
+            messageType:"text",
+            fileUrl:undefined
+
+           })
+      }
+
+
 
     }
   return (

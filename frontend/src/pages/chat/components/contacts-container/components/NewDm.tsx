@@ -1,4 +1,5 @@
 import React, { useContext, useState } from "react";
+import { useEffect } from "react";
 import {
   Tooltip,
   TooltipContent,
@@ -28,12 +29,14 @@ function NewDm() {
   const [searchedContacts, setSearchedContacts] = useState([]);
   const { serverUrl } = useContext(authDataContext)!;
   const { userInfo } = useUserStore();
-  const {setSelectedChatType,setSelectedChatData}=useChatStore()
+  const {setSelectedChatType,setSelectedChatData,selectedChatType}=useChatStore()
+  
 
 
   const selectNewContact = (contact: userType) => {
     setOpenNewContactModal(false)
     setSelectedChatType("contact")
+   
     setSelectedChatData(contact)
     setSearchedContacts([])
 
@@ -60,6 +63,10 @@ function NewDm() {
       console.log(error);
     }
   };
+
+
+
+
   return (
     <div>
       <TooltipProvider>
@@ -97,14 +104,14 @@ function NewDm() {
                 return (
                   <div
                     key={contact._id}
-                    onClick={() => selectNewContact(contact)}
+                    onClick={() => {selectNewContact(contact) } }
                     className="flex gap-3 items-center cursor-pointer"
                   >
                     <div className="w-12 h-12 relative">
                       <Avatar className="h-12 w-12  rounded-full overflow-hidden">
                         {contact.image ? (
                           <AvatarImage
-                            src={contact.image}
+                            src={contact.image}         // here to add theimage
                             alt="profile"
                             className="object-cover w-full h-full bg-black rounded-full" 
                           />

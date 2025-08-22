@@ -22,7 +22,7 @@ import { authDataContext } from '@/context/AuthContext.tsx'
 function ProfileInfo() {
   const navigate=useNavigate()
   const {userInfo,setUserInfo}=useUserStore()
-  const{ serverUrl,setAuthChecked,authChecked}=useContext(authDataContext)!
+  const{ serverUrl}=useContext(authDataContext)!
   const logOut=async ()=>{
     console.log("logout called")
      try{
@@ -30,8 +30,7 @@ function ProfileInfo() {
       const response=await axios.post(`${serverUrl}/api/auth/logout`,{},{withCredentials:true})
       console.log("fasdf")
       if(response.status==200){
-        // setAuthChecked(false)
-        // console.log(authChecked)
+ 
         setUserInfo(undefined)
         navigate("/auth")
          
