@@ -1,4 +1,4 @@
-import React ,{useEffect, useState} from 'react'
+import React ,{useContext, useEffect, useState} from 'react'
 import {GrAttachment} from "react-icons/gr"
 import { IoSend } from 'react-icons/io5'
 import { RiEmojiStickerLine } from 'react-icons/ri'
@@ -7,13 +7,61 @@ import EmojiPicker, { Theme }  from "emoji-picker-react"
 import type { EmojiClickData } from 'emoji-picker-react'
 import { useChatStore, useUserStore } from '@/store/slices/auth-slice'
 import { useSocket } from '@/context/SocketContext'
+import axios from 'axios'
+import { authDataContext } from '@/context/AuthContext'
+
 function MessageBar() {
     const [message,setMessage]=useState("")
     const emojiRef=useRef<HTMLDivElement>(null)
     const [emojiPickerOpen,setEmojiPickerOpen]=useState(false)
-    const {selectedChatType,selectedChatData}=useChatStore()
+    const {selectedChatType,selectedChatData,setIsUploading,setFileUploadProgress}=useChatStore()
     const socket=useSocket()
     const {userInfo}=useUserStore()
+    const fileInputRef=useRef<HTMLInputElement>(null)
+    const {serverUrl}=useContext(authDataContext)!
+
+    const handleAttachmentChange=async(event:any)=>{
+      try{
+        const file=event.target.files[0]
+        console.log(file)
+
+        if(file){
+          const formData=new FormData()
+          formData.append("file",file)
+          setIsUploading(true)
+          
+          const response=await axios.post(`${serverUrl}/api/messages/upload-file`,formData,{withCredentials:true,onUploadProgress:data=>{setFileUploadProgress(Math.round((100*data.loaded)/(data.total?data.total:100)))}})
+          console.log(response)
+          console.log(response.data)
+          if(response.status==200 && response.data){
+            setIsUploading(false)
+            if(selectedChatType==="contact"){
+            socket?.socket?.emit("sendMessage",{
+              sender:userInfo?._id,
+              content:undefined,
+              recipient:selectedChatData._id,
+              messageType:"file",
+              fileUrl:response.data
+            })
+          }
+          }
+
+        }
+
+        
+      }catch(error){
+        setIsUploading(false)
+        console.log(error)
+
+      }
+
+    }
+
+    const handleAttachmentClick=()=>{
+      if(fileInputRef.current){
+        fileInputRef.current.click()
+      }
+    }
 
     const handleAddEmoji=async(emoji:EmojiClickData)=>{
         setMessage((msg)=>msg+emoji.emoji)
@@ -54,9 +102,10 @@ function MessageBar() {
     <div className="h-[10vh] bg-[#1c1d25] flex justify-center items-center px-8 mb-6 gap-6">
       <div className='flex-1 flex bg-[#2a2b33] rounded-md items-center gap-5 pr-5'>
         <input type="text" className="flex-1 p-5 bg-transparent rounded-md focus:border-none focus:outline-none"  placeholder='Enter Message' value={message} onChange={(e)=>setMessage(e.target.value)}/> 
-        <button  className='text-neutral-500 focus:border-none focus:outline-none focus:text-white duraion-300 transition-all'>
+        <button onClick={handleAttachmentClick} className='text-neutral-500 focus:border-none focus:outline-none focus:text-white duraion-300 transition-all'>
                             <GrAttachment className="text-2xl"/>
         </button>
+        <input type="file" className='hidden' ref={fileInputRef} onChange={handleAttachmentChange} />
         <div className="relative">
                     <button onClick={()=>setEmojiPickerOpen(true)} className='text-neutral-500 focus:border-none focus:outline-none focus:text-white duraion-300 transition-all'>
                             <RiEmojiStickerLine className="text-2xl"/>

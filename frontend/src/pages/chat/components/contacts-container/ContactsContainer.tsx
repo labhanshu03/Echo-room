@@ -1,8 +1,40 @@
-import React from 'react'
+import React, { useContext, useEffect } from 'react'
 import ProfileInfo from '../chat-container/components/message-bar/ProfileInfo';
 import NewDm from './components/NewDm';
+import axios from 'axios';
+import { authDataContext } from '@/context/AuthContext';
+import { useChatStore, useUserStore } from '@/store/slices/auth-slice';
+import ContactList from '@/components/ui/ContactList';
+import CREATECHANNEL from './components/CreateChannel';
 
 function ContactsContainer() {
+  const {serverUrl}=useContext(authDataContext)!
+  const {setDirectMessagesContacts,directMessageContacts}=useChatStore()
+  const {userInfo}=useUserStore()
+
+
+
+  useEffect(()=>{
+    const getContacts=async()=>{
+      try{
+      console.log(`${serverUrl}/api/contacts/get-contacts-for-dm`)
+      
+      const response =await axios.get(`${serverUrl}/api/contacts/get-contacts-for-dm`,{withCredentials:true})
+      console.log("this is")
+      console.log(response.data.contacts+"this is the response")
+      const newresponse=response.data.contacts.filter((contact:any)=>contact.email!==userInfo?.email)
+
+      if(response.data.contacts){
+        console.log(newresponse);
+        console.log(newresponse)
+        setDirectMessagesContacts(newresponse)
+      }
+    }catch(error:any){
+      console.log(error.message)
+    }
+    }
+    getContacts()
+  },[])
   return (
     <div className='relative md:w-[30vw] lg:w-[30vw] lg:w-[30vw] xl:w-[20vw] bg-[#1b1c24] border-r-2 border-[#2f303b] w-full '>
         <div className="pt-3">
@@ -13,10 +45,15 @@ function ContactsContainer() {
                 <Title text="Direct Messages"/>
                 <NewDm/>
             </div>
+            <div className='max-h-[38vh] overflow-y-auto scrollbar-hidden'>
+              <ContactList contacts={directMessageContacts} isChannel={false}></ContactList>
+
+            </div>
         </div>
         <div className='my-5'>
             <div className='flex items-center justify-between pr-10'>
                 <Title text="Channels"></Title>
+                <CREATECHANNEL/>
             </div>
         </div>
         <ProfileInfo/>
