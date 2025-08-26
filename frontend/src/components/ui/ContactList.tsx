@@ -1,7 +1,7 @@
 import { useChatStore } from "@/store/slices/auth-slice"
 import { Avatar, AvatarImage } from "./avatar";
 import { getColor } from "@/lib/utils";
-import { Divide } from "lucide-react";
+
 
 interface ContactListProps{
     contacts:any[],
