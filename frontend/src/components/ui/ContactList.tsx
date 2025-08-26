@@ -14,7 +14,7 @@ const ContactList=({contacts,isChannel=false}:ContactListProps)=>{
         setSelectedChatData,
         setSelectedChatType,
         setSelectedChatMessages,
-        selectedChatType
+       
     }=useChatStore();
 
     
