@@ -29,20 +29,7 @@ export const SocketProvider = ({ children }: SocketProviderProps) => {
   const { userInfo } = useUserStore();
   const {selectedChatData,selectedChatType,addMessage,addChannelInChannelList,addContactsInDmContacts}=useChatStore()
 
-          const handleRecieveMessage=(message:any)=>{
-             console.log("recieved message from handleRecieve Message")
-             console.log(selectedChatType)
-           
-
-           if(selectedChatType!==undefined && (selectedChatData._id ===message.sender._id  || selectedChatData._id===message.recipient._id)){
-            
-            console.log("message recieved",message)
-            addMessage(message)
-                                
-           }
-           console.log("add store called")
-          
-      }
+ 
 
       const handleRecieveChannelMessage=(message:any)=>{
          if(selectedChatType!==undefined && selectedChatData._id===message.channelId){
