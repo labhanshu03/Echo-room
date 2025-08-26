@@ -1,5 +1,5 @@
-import React, { useContext } from 'react'
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useContext } from 'react'
+import { Avatar,  AvatarImage } from "@/components/ui/avatar"
 import { useUserStore } from '@/store/slices/auth-slice'
 import { getColor } from '@/lib/utils'
 import {

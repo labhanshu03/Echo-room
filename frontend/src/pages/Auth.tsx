@@ -1,5 +1,4 @@
-import React, { useContext, useState } from 'react'
-import image from "../assets/image.png"
+import  { useContext, useState } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
 import { Button } from '@/components/ui/button'
@@ -75,7 +74,7 @@ function Auth() {
       if(validateSignUp()){
         const response= await axios.post(`${serverUrl}/api/auth/signup`,{email,password},{withCredentials:true})
         if(response.status==200){
-            setUserInfo(response.data.user)
+            setUserInfo(response.data)
           navigate("/profile")
         }
         console.log(response)

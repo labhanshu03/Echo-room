@@ -1,4 +1,4 @@
-import React from 'react'
+
 import ChatHeader from './components/chat-header/ChatHeader.tsx'
 import MessageBar from './components/message-bar/MessageBar.tsx'
 import MessageContainer from './components/message-container/MessageContainer.tsx'

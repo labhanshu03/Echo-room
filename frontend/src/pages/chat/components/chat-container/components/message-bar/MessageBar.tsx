@@ -1,4 +1,4 @@
-import React ,{useContext, useEffect, useState} from 'react'
+import {useContext, useEffect, useState} from 'react'
 import {GrAttachment} from "react-icons/gr"
 import { IoSend } from 'react-icons/io5'
 import { RiEmojiStickerLine } from 'react-icons/ri'

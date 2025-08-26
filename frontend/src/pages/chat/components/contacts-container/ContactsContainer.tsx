@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react'
+import  { useContext, useEffect } from 'react'
 import ProfileInfo from '../chat-container/components/message-bar/ProfileInfo';
 import NewDm from './components/NewDm';
 import axios from 'axios';

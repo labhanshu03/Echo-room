@@ -1,5 +1,4 @@
-import React, { useContext, useState } from "react";
-import { useEffect } from "react";
+import  { useContext, useState } from "react";
 import {
   Tooltip,
   TooltipContent,
@@ -15,12 +14,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-// import { Contact, Divide } from "lucide-react";
 import { animationDefaultOptions, getColor } from "@/lib/utils";
 import Lottie from "react-lottie";
 import axios from "axios";
 import { authDataContext } from "@/context/AuthContext";
-
 import { useChatStore, useUserStore, type userType } from "@/store/slices/auth-slice";
 import { Avatar, AvatarImage } from "@radix-ui/react-avatar";
 
@@ -29,7 +26,7 @@ function NewDm() {
   const [searchedContacts, setSearchedContacts] = useState([]);
   const { serverUrl } = useContext(authDataContext)!;
   const { userInfo } = useUserStore();
-  const {setSelectedChatType,setSelectedChatData,selectedChatType}=useChatStore()
+  const {setSelectedChatType,setSelectedChatData}=useChatStore()
   
 
 

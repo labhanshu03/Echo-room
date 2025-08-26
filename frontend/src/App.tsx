@@ -1,7 +1,7 @@
 
 
-import React, { useContext, useEffect, useState } from 'react'
-import { Button } from './components/ui/button'
+import  { useContext, useEffect, useState } from 'react'
+
 import { Routes, Route, Navigate } from 'react-router-dom'
 import Auth from './pages/Auth'
 import Chat from './pages/Chat'

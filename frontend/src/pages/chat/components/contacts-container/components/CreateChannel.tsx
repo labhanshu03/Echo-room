@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import { useContext, useState } from "react";
 import { useEffect } from "react";
 import {
   Tooltip,
@@ -14,23 +14,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { ScrollArea } from "@/components/ui/scroll-area";
-// import { Contact, Divide } from "lucide-react";
-import { animationDefaultOptions, getColor } from "@/lib/utils";
-import Lottie from "react-lottie";
 import axios from "axios";
 import { authDataContext } from "@/context/AuthContext";
-
-import { useChatStore, useUserStore, type userType } from "@/store/slices/auth-slice";
-
+import { useChatStore} from "@/store/slices/auth-slice";
 import { Button } from "@/components/ui/button";
 import MultipleSelector,{type Option} from "@/components/ui/MultipleSelector";
 
 function CREATECHANNEL() { 
 
   const { serverUrl } = useContext(authDataContext)!;
-  const [channelName,setChannelName]=useState("") 
-  const [searchedContacts,setSearchedContacts]=useState([])
+  const [channelName,setChannelName]=useState("")  
   const[newChannelModal,setNewChannelModal]=useState(false)
   const [allContacts, setAllContacts] = useState<Option[]>([]);
   const [selectedContacts, setSelectedContacts] = useState<Option[]>([]);

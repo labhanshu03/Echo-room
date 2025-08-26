@@ -1,8 +1,6 @@
 import { Avatar, AvatarImage } from '@/components/ui/avatar'
 import { getColor } from '@/lib/utils'
 import { useChatStore } from '@/store/slices/auth-slice'
-import { Divide } from 'lucide-react'
-import React from 'react'
 import {RiCloseFill} from "react-icons/ri"
 
 function ChatHeader() {
@@ -54,5 +52,7 @@ function ChatHeader() {
     </div>
   )
 }
+
+
 
 export default ChatHeader

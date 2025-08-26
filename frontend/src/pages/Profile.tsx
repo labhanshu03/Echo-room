@@ -1,8 +1,8 @@
-// import { useAppStore } from '@/store'
+
 import { useUserStore } from '@/store/slices/auth-slice'
 import React,{useContext, useEffect, useState} from 'react'
 import {IoArrowBack} from "react-icons/io5"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar,  AvatarImage } from "@/components/ui/avatar"
 import { getColor } from '@/lib/utils'
 import {FaPlus,FaTrash} from "react-icons/fa"
 import { colors } from '@/lib/utils'

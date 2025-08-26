@@ -1,7 +1,7 @@
 import { useChatStore, useUserStore } from '@/store/slices/auth-slice'
-import React, { useContext, useEffect, useState } from 'react'
+import  { useContext, useEffect, useState } from 'react'
 import moment from "moment"
-import { Divide } from 'lucide-react'
+
 import { useRef } from 'react'
 import axios from 'axios'
 import { authDataContext } from '@/context/AuthContext'
