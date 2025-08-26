@@ -7,7 +7,7 @@ import Channel from "./models/ChannelModel.js"
 const setupSocket=(server)=>{
      const io=new SocketIoServer(server,{
         cors:{
-            origin:process.env.ORIGIN,
+            origin:"https://echo-room-frontend1.onrender.com",
             methods:["GET","POST"],
             credentials:true
         }
