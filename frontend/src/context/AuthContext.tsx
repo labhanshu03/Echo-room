@@ -13,7 +13,7 @@ export const authDataContext=createContext<AuthContextType|undefined>(undefined)
 
 function AuthContext({children}:AuthProviderProps) {
 
-    const serverUrl="http://localhost:8000"
+    const serverUrl="https://echo-room-backend-4gzw.onrender.com"
       const [authChecked, setAuthChecked] = useState(false)
 
     const value={
