@@ -33,12 +33,14 @@ app.use("/api/contacts",contactsRoutes)
 app.use("/api/messages",messagesRoutes)
 app.use("/api/channel",channelRoutes)
 
+
+app.get("/",(req,res)=>{
+      res.json({ message: 'Server is running!' });
+})
 const server=app.listen(port,()=>{
     connectDb()
       
      console.log("server started at port" + port)
 })
-
-
 
 setupSocket(server)
