@@ -1,70 +1,3 @@
-// import React, { useContext, useEffect, useState } from 'react'
-// import { Button } from './components/ui/button'
-// import {  Routes ,Route, Navigate} from 'react-router-dom'
-// import Auth from './pages/Auth'
-// import Chat from './pages/Chat'
-// import Profile from './pages/Profile'
-// import { useUserStore } from './store/slices/auth-slice'
-// import axios from 'axios'
-// import { authDataContext } from './context/AuthContext'
-
-
-// function App() { 
-
-//    const {serverUrl}=useContext(authDataContext)!
-//    const {userInfo,setUserInfo}=useUserStore()
-//    const [loading,setLoading]=useState(true)
-
-//    useEffect(()=>{
-    
-    
-//     const getUserData=async()=>{
-//        console.log("dfaadfs")
-//       try{
-        
-//           const response=await axios.get(`${serverUrl}/api/auth/userinfo`,{withCredentials:true})
-//         console.log("thisis the response"+response.data +"fsda")
-//         console.log(response.data)
-//         if(response.status==200 && response.data._id){
-//           console.log(response.data+"this is the response data in app")
-          
-//           setUserInfo(response.data)
-//           console.log(userInfo + "this is the user infor in app")
-//         }else{
-//           setUserInfo(undefined)
-//         }
-//       }catch(error){
-//         console.log(error)
-//         setUserInfo(undefined)
-//       }finally{
-//         setLoading(false)
-//       }
-//     }
-
-//      if(!userInfo){
-//         getUserData()
-//    }else{
-//     setLoading(false)
-//    }
-//    },[userInfo,setUserInfo])
-
-  
-
-//   return (
-//   <Routes>
-//    <Route path="/auth" element={<Auth/>}/>
-//    <Route path="/chat" element={userInfo?<Chat/>:<Navigate to="/auth"/>}></Route>
-//    <Route path="/profile" element={userInfo?<Profile/>:<Navigate to="/auth" />}></Route>
-
-//    <Route path="*" element={<Navigate to="/auth"/>}/>
-         
-   
-//   </Routes>
-//   )
-// }
-
-// export default App
-
 
 
 import React, { useContext, useEffect, useState } from 'react'
@@ -89,7 +22,7 @@ function App() {
       try {
         const response = await axios.get(`${serverUrl}/api/auth/userinfo`, { withCredentials: true })
         
-        console.log("Auth response:", response.data)
+        // console.log("Auth response:", response.data)
         
         if (response.status === 200 && response.data._id) {
           console.log("User authenticated, setting user data")
@@ -116,7 +49,7 @@ function App() {
   // Separate effect to log userInfo changes
   useEffect(() => {
     if (authChecked) {
-      console.log("UserInfo updated:", userInfo)
+      console.log("UserInfo updated:", )
     }
   }, [userInfo, authChecked])
 
@@ -129,7 +62,7 @@ function App() {
     )
   }
 
-  console.log("Rendering routes with userInfo:", userInfo)
+  // console.log("Rendering routes with userInfo:", userInfo)
 
   return (
     <Routes>

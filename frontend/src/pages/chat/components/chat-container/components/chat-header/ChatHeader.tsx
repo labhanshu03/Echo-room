@@ -1,6 +1,7 @@
 import { Avatar, AvatarImage } from '@/components/ui/avatar'
 import { getColor } from '@/lib/utils'
 import { useChatStore } from '@/store/slices/auth-slice'
+import { Divide } from 'lucide-react'
 import React from 'react'
 import {RiCloseFill} from "react-icons/ri"
 
@@ -12,7 +13,8 @@ function ChatHeader() {
         <div className='flex gap-5 items-center w-full justify-between '>
             <div className='flex gap-3 items-center '>
                    <div className="w-12 h-12 relative">
-                      <Avatar className="h-12 w-12  rounded-full overflow-hidden">
+                    {
+                      selectedChatType==="contact" ?   <Avatar className="h-12 w-12  rounded-full overflow-hidden">
                         {selectedChatData.image ? (
                           <AvatarImage
                             src={selectedChatData.image}
@@ -30,10 +32,15 @@ function ChatHeader() {
                               : selectedChatData?.email.split("").shift()}
                           </div>
                         )}
-                      </Avatar>
+                      </Avatar>:<div className="bg-[#ffffff22] h-10 w-10 flex items-center justify-center rounded-full">#</div>
+                    }
+                   
                     </div>
                     <div>
-                      {selectedChatType==="contact" &&   (selectedChatData.firstName && selectedChatData.lastName)? `${selectedChatData.firstName} ${selectedChatData.lastName}`: `${selectedChatData.email}`}    
+                      
+                      {selectedChatType==="channel" && selectedChatData?.name }
+                      {  selectedChatType==="contact"  &&   (selectedChatData.firstName && selectedChatData.lastName)? `  ${selectedChatData.firstName} ${selectedChatData.lastName}`:selectedChatData.email? `${selectedChatData.email}`:""}    
+
                     </div>
             </div>
 

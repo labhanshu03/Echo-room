@@ -22,47 +22,57 @@ import axios from "axios";
 import { authDataContext } from "@/context/AuthContext";
 
 import { useChatStore, useUserStore, type userType } from "@/store/slices/auth-slice";
-import { Avatar, AvatarImage } from "@radix-ui/react-avatar";
+
+import { Button } from "@/components/ui/button";
+import MultipleSelector,{type Option} from "@/components/ui/MultipleSelector";
 
 function CREATECHANNEL() { 
-  const [openNewContactModal, setOpenNewContactModal] = useState(false);
-  const [searchedContacts, setSearchedContacts] = useState([]);
+
   const { serverUrl } = useContext(authDataContext)!;
-  const { userInfo } = useUserStore();
-  const {setSelectedChatType,setSelectedChatData,selectedChatType}=useChatStore()
+  const [channelName,setChannelName]=useState("") 
+  const [searchedContacts,setSearchedContacts]=useState([])
+  const[newChannelModal,setNewChannelModal]=useState(false)
+  const [allContacts, setAllContacts] = useState<Option[]>([]);
+  const [selectedContacts, setSelectedContacts] = useState<Option[]>([]);
+  const {addChannel}=useChatStore()
+
+
+  useEffect(()=>{
+    // console.log("use effect of create channel called")
+   
+
+        const getData=async()=>{
+               const response=await axios.get(`${serverUrl}/api/contacts/get-all-contacts`,{withCredentials:true})
+            //    console.log(response.data)
+               setAllContacts(response.data.contacts)
+        }
+        getData()
+  },[])
   
 
 
-  const selectNewContact = (contact: userType) => {
-    setOpenNewContactModal(false)
-    setSelectedChatType("contact")
-   
-    setSelectedChatData(contact)
-    setSearchedContacts([])
-
-
-  };
-
-  const searchContacts = async (searchTerm: string) => {
-    console.log(searchTerm)
-    try {
-      if (searchTerm.length > 0) {
-        const response = await axios.post(
-          `${serverUrl}/api/contacts/search`,
-          { searchTerm },
-          { withCredentials: true }
-        );
-        console.log(response.data)
-        if (response.status == 200 && response.data.contacts) {
-          setSearchedContacts(response.data.contacts);
+ const createChannel=async()=>{
+         try{
+           
+            if(channelName.length>0 && selectedContacts.length>0){
+                
+            const response=await axios.post(`${serverUrl}/api/channel/create-channel`,{
+        name:channelName,
+        members:selectedContacts.map((contact)=>contact.value)
+         },{withCredentials:true})
+         if(response.status===201){
+            setChannelName("")
+            setSelectedContacts([])
+            setNewChannelModal(false)
+            addChannel(response.data.channel)
+         }
         }
-      } else {
-        setSearchedContacts([]);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+         }catch(error){
+            console.log(error)
+         }
+ }
+
+ 
 
 
 
@@ -73,29 +83,51 @@ function CREATECHANNEL() {
         <Tooltip>
           <TooltipTrigger>
             <FaPlus
-              onClick={() => setOpenNewContactModal(true)}
+              onClick={() => setNewChannelModal(true)}
               className="text-neutral-400 font-light text-opacity-90 text-start hover:text-neutral-100 cursor-pointer transition-all duration-300 "
             />
           </TooltipTrigger>
           <TooltipContent className="bg-[#1c1b1e] border-none mb-2 p-3 text-white">
             {" "}
-            Select New Contact
+            Create New Channel
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
-      <Dialog open={openNewContactModal} onOpenChange={setOpenNewContactModal}>
+      <Dialog open={newChannelModal} onOpenChange={setNewChannelModal}>
         <DialogContent className="bg-[#181920] border-none text-white w-[400px] h-[400px] flex flex-col">
           <DialogHeader>
-            <DialogTitle>Please select a contact</DialogTitle>
+            <DialogTitle>Please fill up the details for new channel</DialogTitle>
             <DialogDescription></DialogDescription>
           </DialogHeader>
           <div>
             <input
               type="text"
-              placeholder="Search Contacts"
+              placeholder="Channel Name"
               className="rounded-lg p-6 bg-[#2c2e3b]  w-full border-black"
-              onChange={(e) => searchContacts(e.target.value)}
+              onChange={(e) => setChannelName(e.target.value)}
+              value={channelName}
             />
+          </div>
+          <div>
+            <MultipleSelector className="rounded-lg bg-[#2c2e3b] border-none py-2 text-white" 
+            options={allContacts}
+            placeholder="Search Contacts"
+            value={selectedContacts}
+            onChange={setSelectedContacts}
+            emptyIndicator={
+                <p className="text-center text-lg leading-10 text-gray-600">
+                                    No Results found
+                    </p>
+
+            }
+
+            
+            />
+          </div>
+
+          <div>
+
+            <Button onClick={createChannel} className="w-full bg-purple-700 hover:bg-purple-900 transition-all duration-300">Create Channel</Button>
           </div>
     
         </DialogContent>

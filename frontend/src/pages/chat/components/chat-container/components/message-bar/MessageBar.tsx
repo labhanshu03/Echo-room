@@ -36,6 +36,7 @@ function MessageBar() {
           if(response.status==200 && response.data){
             setIsUploading(false)
             if(selectedChatType==="contact"){
+ 
             socket?.socket?.emit("sendMessage",{
               sender:userInfo?._id,
               content:undefined,
@@ -43,6 +44,16 @@ function MessageBar() {
               messageType:"file",
               fileUrl:response.data
             })
+          } else if(selectedChatType==="channel"){
+                         
+            socket.socket?.emit("send-channel-message",{
+          sender:userInfo?._id,
+          content:undefined,
+          messageType:"file",
+          fileUrl:response.data,
+          channelId:selectedChatData._id
+
+        })
           }
           }
 
@@ -84,6 +95,7 @@ function MessageBar() {
       console.log(selectedChatType + "this is in handle Send message")
       
       if(selectedChatType==="contact"){
+                     console.log("this is the chat from contact this shouldnt' be called")
        
            socket.socket?.emit("sendMessage",{
             sender:userInfo?._id,
@@ -93,8 +105,18 @@ function MessageBar() {
             fileUrl:undefined
 
            })
+      } else if(selectedChatType=="channel"){
+
+        socket.socket?.emit("send-channel-message",{
+          sender:userInfo?._id,
+          content:message,
+          messageType:"text",
+          fileUrl:undefined,
+          channelId:selectedChatData._id
+        })
       }
 
+    setMessage("")
 
 
     }

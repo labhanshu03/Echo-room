@@ -33,7 +33,7 @@ export const SocketProvider = ({ children }: SocketProviderProps) => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const { userInfo } = useUserStore();
-  const {selectedChatData,selectedChatType,addMessage}=useChatStore()
+  const {selectedChatData,selectedChatType,addMessage,addChannelInChannelList,addContactsInDmContacts}=useChatStore()
 
           const handleRecieveMessage=(message:any)=>{
              console.log("recieved message from handleRecieve Message")
@@ -46,6 +46,16 @@ export const SocketProvider = ({ children }: SocketProviderProps) => {
             addMessage(message)
                                 
            }
+           console.log("add store called")
+          
+      }
+
+      const handleRecieveChannelMessage=(message:any)=>{
+         if(selectedChatType!==undefined && selectedChatData._id===message.channelId){
+          addMessage(message)
+         }
+         addChannelInChannelList(message)
+
       }
   
     
@@ -106,10 +116,13 @@ export const SocketProvider = ({ children }: SocketProviderProps) => {
           console.log("message recieved", message);
           addMessage(message);
         }
+         addContactsInDmContacts(message)
+        
       };
 
       // Register the listener
       socket.on("recieveMessage", handleRecieveMessage);
+      socket.on("recieve-channel-message",handleRecieveChannelMessage)
 
       // Cleanup: remove the old listener
       return () => {

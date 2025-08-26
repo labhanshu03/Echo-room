@@ -19,6 +19,7 @@ const ContactList=({contacts,isChannel=false}:ContactListProps)=>{
 
     
     const handleClick=(contact:any)=>{
+         
          if(isChannel) setSelectedChatType("channel")
             else setSelectedChatType("contact")
         setSelectedChatData(contact)
@@ -55,7 +56,7 @@ const ContactList=({contacts,isChannel=false}:ContactListProps)=>{
                         }
                         {isChannel&& <div className="bg-[#ffffff22] h-10 w-10 flex items-center justify-center rounded-full">#</div>}
                         {
-                            isChannel?<span>{contact.name}</span>:<span>{`${contact.firstName} ${contact.lastName}`}</span>
+                            isChannel?<span>{contact.name}</span>:<span>{contact.firstName?`${contact.firstName} ${contact.lastName}`:contact.email}</span>
                         }
                     </div>
                 </div>
