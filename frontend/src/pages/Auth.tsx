@@ -18,8 +18,8 @@ function Auth() {
   // }));
     const {setUserInfo,userInfo}=useUserStore()
    
-    const [email,setEmail]=useState("")
-    const [password,setPassword]=useState("")
+    const [email,setEmail]=useState("labhgupta444@gmail.com")
+    const [password,setPassword]=useState("1234567890")
     const [confirmPassword,setConfirmPassword]=useState("")
     const {serverUrl} =useContext(authDataContext)!
     // const serverUrl="http://localhost:8000"
