@@ -81,7 +81,7 @@ function MessageContainer() {
      {
       checkIfImage(message.fileUrl)?<div className="cursor-pointer" onClick={()=>{setShowImage(true);setImageUrl(message.fileUrl)}}>
        
-        <img src={`${serverUrl}/${message.fileUrl.replace('public', '')}`}  alt="" className='h-[300px] w-[300px]' />
+        <img src={`${serverUrl}${message.fileUrl.replace('public', '')}`}  alt="" className='h-[300px] w-[300px]' />
       </div>:<div className='flex items-center justify-center gap-4'>
         <span className='text-white/8 text-3xl bg-black/20 rounded-full p-3'>
         <MdFolderZip/>
