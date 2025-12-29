@@ -18,7 +18,7 @@ const port=process.env.PORT ||5000
 app.use(cookieParser())
 app.use(express.json()) 
 app.use(cors({
-    origin:"https://echo-room-frontend1.onrender.com",
+    origin:["https://echo-room-frontend1.onrender.com","http://localhost:5173", "http://localhost:5174"],
     credentials:true,
       
 }))
