@@ -1,4 +1,5 @@
-# 💬 Echo-room
+# 💬 Echo-room (Horizontally scaled using redis pub sub) 
+## (MERN, Redis(pub/sub), Docker-compose, Socket.io, Typescript, Zustand, Shadcn(UI))
 
 ### Real-Time Messaging Platform Built for Modern Communication
 
