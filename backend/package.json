@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon index.js",
+     "dev1":"node index.js",
     "dev:8000": "cross-env PORT=8000 nodemon index.js",
     "dev:8001": "cross-env PORT=8001 nodemon index.js"
   },
