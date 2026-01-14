@@ -1,0 +1,32 @@
+# Dependencies
+node_modules
+
+# Production build output
+dist
+build
+.next
+out
+
+# Environment files
+.env
+.env.*
+*.local
+
+# Logs
+npm-debug.log
+yarn-error.log
+pnpm-debug.log
+
+# Git
+.git
+.gitignore
+
+# OS / Editor junk
+.vscode
+.idea
+.DS_Store
+Thumbs.db
+
+# Docker files
+Dockerfile
+docker-compose.yml
