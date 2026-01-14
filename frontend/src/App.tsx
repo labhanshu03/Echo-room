@@ -56,8 +56,12 @@ function App() {
   // Show loading while checking auth
   if (loading || !authChecked) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="text-lg">Loading...</div>
+      <div className="flex flex-col items-center justify-center h-screen space-y-2">
+      
+        <p className="text-lg">Waking up the server…</p>
+        <p className="text-lg"> This app is hosted on Render’s free tier, which sleeps after inactivity,
+  so the first request may take a moment.</p>
+        <p>Once it’s ready, everything will load instantly 🚀</p>
       </div>
     )
   }
