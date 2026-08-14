@@ -9,10 +9,21 @@ A powerful, feature-rich real-time messaging platform built with the MERN stack 
 [![GitHub Forks](https://img.shields.io/github/forks/labhanshu03/Echo-room?style=social)](https://github.com/labhanshu03/Echo-room/fork)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=flat&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
+[![Python](https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&logoColor=white)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 
 ---
 
 ## ✨ Features
+
+### 🤖 AI-Powered Conversation Search (RAG)
+- **Ask questions about your own chat history** — "when does the trip start?", "who's bringing what?" — answered from real, past conversations, not guesses
+- **Scoped per conversation** — answers are drawn only from the specific DM/channel being asked about, never leaked across conversations
+- **Recency-aware answers** — if a decision changed later in the conversation, the most recent message wins
+- **Handles topic drift automatically** — a burst of messages covering multiple unrelated subjects (e.g. dinner plans + a sports update + a reminder) is detected and split so each subject is independently searchable
+- **Same topic, resumed weeks later** — conversations picked back up after a long gap are linked to the original topic thread instead of starting over
+- **Fully self-hosted** — local embeddings ([`all-MiniLM-L6-v2`](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2)) and a local LLM ([Ollama](https://ollama.com/)), no external AI API required
+- Backed by a small evaluation harness (24 test cases, including negative and cross-conversation-isolation checks) so retrieval quality is measured, not assumed — see [`docs/rag-architecture.html`](docs/rag-architecture.html) for the full design writeup
 
 ### 💬 Real-Time Communication
 - **Instant Messaging**: Lightning-fast message delivery using WebSocket technology
@@ -83,7 +94,23 @@ Ensure you have the following installed:
    npm install
    ```
 
-4. **Set up environment variables**
+4. **Set up the RAG service (Python)**
+   ```bash
+   cd rag-service
+   python -m venv venv
+   .\venv\Scripts\Activate.ps1   # Windows; use `source venv/bin/activate` on macOS/Linux
+   pip install -r requirements.txt
+   ```
+
+5. **Install and start Ollama**
+
+   Download from [ollama.com](https://ollama.com/), then pull the model used for summaries/answers:
+   ```bash
+   ollama pull llama3.1
+   ```
+   Ollama runs as a background service after install — no separate `ollama serve` needed unless it isn't already running.
+
+6. **Set up environment variables**
 
    Create a `.env` file in the `backend` directory:
    ```env
@@ -95,6 +122,19 @@ Ensure you have the following installed:
    CLOUDINARY_API_KEY=CLOUDINARY_API_KEY
    CLOUDINARY_API_SECRET=CLOUDINARY_API_SECRET
    GEMINI_API_KEY=GEMINI_API_KEY
+   REDIS_HOST=YOUR_REDIS_HOST
+   REDIS_PORT=YOUR_REDIS_PORT
+   REDIS_PASSWORD=YOUR_REDIS_PASSWORD
+   RAG_SERVICE_URL=http://127.0.0.1:8001
+   INTERNAL_JWT_SECRET=A_DIFFERENT_RANDOM_SECRET_FROM_JWT_KEY
+   ```
+
+   Create a `.env` file in the `rag-service` directory:
+   ```env
+   MONGO_URI=MONGODB_ATLAS_URL
+   INTERNAL_JWT_SECRET=SAME_VALUE_AS_BACKEND_ENV
+   OLLAMA_BASE_URL=http://127.0.0.1:11434
+   OLLAMA_MODEL=llama3.1
    ```
 
    Create a `.env` file in the `frontend` directory:
@@ -102,20 +142,29 @@ Ensure you have the following installed:
    VITE_SERVER_URL="http://localhost:8000"
    ```
 
-5. **Start MongoDB**
-   ```bash
-   # If using local MongoDB
-   mongod
-   
-   # Or ensure your MongoDB service is running
-   ```
+7. **Configure MongoDB Atlas Vector Search**
 
-6. **Run the application**
+   The RAG feature needs two vector search indexes on your Atlas cluster — `chunks_vector_index` (on the `chunks.embedding` field) and `topics_vector_index` (on `topics.centroidEmbedding`), each with `participants` and `conversationKey` as filter fields. See [`docs/rag-architecture.html`](docs/rag-architecture.html) for the exact index definitions.
+
+8. **Run the application**
 
    Start the backend server:
    ```bash
    cd backend
    npm run dev
+   ```
+
+   In a new terminal, start the chunk-processing worker:
+   ```bash
+   cd backend
+   npm run worker
+   ```
+
+   In a new terminal, start the RAG service:
+   ```bash
+   cd rag-service
+   .\venv\Scripts\Activate.ps1
+   uvicorn app.main:app --reload --port 8001
    ```
 
    In a new terminal, start the frontend:
@@ -124,9 +173,10 @@ Ensure you have the following installed:
    npm run dev
    ```
 
-7. **Access the application**
+9. **Access the application**
    - Frontend: `http://localhost:5173`
    - Backend API: `http://localhost:8000`
+   - RAG service: `http://localhost:8001`
 
 ---
 
@@ -152,6 +202,15 @@ Ensure you have the following installed:
 - **Bcrypt** - Password hashing
 - **Multer** - File upload handling
 - **Cloudinary** - Cloud storage for media files
+- **BullMQ + Redis** - Async job queue for debounced chunk processing
+
+### AI / RAG Service (Python)
+- **FastAPI** - Async Python web framework serving the RAG endpoints
+- **sentence-transformers (`all-MiniLM-L6-v2`)** - Local, self-hosted embedding model
+- **Ollama (Llama 3.1)** - Local LLM for topic summarization and answer generation
+- **MongoDB Atlas Vector Search** - Vector similarity search over conversation topics/chunks
+- **Motor** - Async MongoDB driver for Python
+- **PyJWT** - Verifies short-lived internal service-to-service tokens signed by the Node backend
 
 ---
 
@@ -192,6 +251,29 @@ Echo-room/
 │   │   └── server.ts         # Entry point
 │   ├── package.json
 │   └── tsconfig.json
+│
+├── rag-service/                # Python RAG microservice
+│   ├── app/
+│   │   ├── main.py            # FastAPI app: /process-chunk, /query endpoints
+│   │   ├── config.py          # Env var loading
+│   │   ├── db.py               # Motor (async Mongo) client
+│   │   ├── auth.py             # Internal JWT verification
+│   │   └── services/
+│   │       ├── embedding.py    # all-MiniLM-L6-v2 wrapper
+│   │       ├── segmentation.py # LLM pass to split multi-subject chunks
+│   │       ├── topic_matching.py # Cosine-similarity topic linking
+│   │       ├── retrieval.py    # Shared retrieval logic (used by /query and eval)
+│   │       └── llm.py          # Ollama API calls
+│   ├── eval/                   # Evaluation harness
+│   │   ├── discover_topics.py  # List real topics from the database
+│   │   ├── discover_chunks.py  # Inspect raw messages behind a topic
+│   │   ├── test_cases.json     # Hand-written (question -> expected topic) pairs
+│   │   └── run_eval.py         # Scores retrieval against test_cases.json
+│   ├── requirements.txt
+│   └── Dockerfile
+│
+├── docs/
+│   └── rag-architecture.html   # Full RAG design writeup and interview reference
 │
 ├── .gitignore
 ├── README.md
@@ -266,6 +348,7 @@ GET    /api/messages/:chatId   # Get messages for a chat
 POST   /api/messages           # Send a message
 PUT    /api/messages/:id       # Edit a message
 DELETE /api/messages/:id       # Delete a message
+POST   /api/messages/ask       # Ask a question about a conversation's history (RAG)
 ```
 
 ### Chats
@@ -372,6 +455,7 @@ Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduc
 
 - File upload may be slow for large files on slower connections
 - Ensure stable internet connection for optimal real-time performance
+- The local embedding model (`all-MiniLM-L6-v2`) shows weaker topic-relevance separation on short, casual chat text than a hosted embedding model would — measured via the evaluation harness (21/24 test cases passing). See [`docs/rag-architecture.html`](docs/rag-architecture.html) for the full analysis.
 
 ---
 
