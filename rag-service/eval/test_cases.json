@@ -1,0 +1,126 @@
+[
+  {
+    "question": "when does the trip to manali start?",
+    "conversationKey": "dm:694ccd8455d03db1c6f967f5_69707c12981aec14c07d4771",
+    "expectedTopicIds": ["6a7f112a2ef8ee97c0bc9e10"]
+  },
+  {
+    "question": "who is coming on the manali trip?",
+    "conversationKey": "dm:694ccd8455d03db1c6f967f5_69707c12981aec14c07d4771",
+    "expectedTopicIds": ["6a7f112a2ef8ee97c0bc9e10"]
+  },
+  {
+    "question": "what groceries do we need to buy?",
+    "conversationKey": "dm:694ccd8455d03db1c6f967f5_69707c12981aec14c07d4771",
+    "expectedTopicIds": ["6a7f2b30592270518bd14509"]
+  },
+  {
+    "question": "are we getting eggs?",
+    "conversationKey": "dm:694ccd8455d03db1c6f967f5_69707c12981aec14c07d4771",
+    "expectedTopicIds": ["6a7f2b30592270518bd14509"]
+  },
+  {
+    "question": "what movie are we watching this weekend?",
+    "conversationKey": "dm:694ccd8455d03db1c6f967f5_69707c12981aec14c07d4771",
+    "expectedTopicIds": ["6a7f309fe81af122188fb951"]
+  },
+  {
+    "question": "what time is gym tomorrow?",
+    "conversationKey": "dm:694ccd8455d03db1c6f967f5_69707c12981aec14c07d4771",
+    "expectedTopicIds": ["6a7f30aee81af122188fb953", "6a7f30b5e81af122188fb955"]
+  },
+  {
+    "question": "should we do legs day?",
+    "conversationKey": "dm:694ccd8455d03db1c6f967f5_69707c12981aec14c07d4771",
+    "expectedTopicIds": ["6a7f30b5e81af122188fb955", "6a7f30aee81af122188fb953"]
+  },
+  {
+    "question": "what pizza topping did we order?",
+    "conversationKey": "dm:694ccd8455d03db1c6f967f5_69707c12981aec14c07d4771",
+    "expectedTopicIds": ["6a7f30bfe81af122188fb957", "6a7f30d5e81af122188fb95d"]
+  },
+  {
+    "question": "who won the cricket match?",
+    "conversationKey": "dm:694ccd8455d03db1c6f967f5_69707c12981aec14c07d4771",
+    "expectedTopicIds": ["6a7f30c7e81af122188fb959"]
+  },
+  {
+    "question": "do i need to call the dentist?",
+    "conversationKey": "dm:694ccd8455d03db1c6f967f5_69707c12981aec14c07d4771",
+    "expectedTopicIds": ["6a7f30cde81af122188fb95b"]
+  },
+  {
+    "question": "did we end up getting that pizza?",
+    "conversationKey": "dm:694ccd8455d03db1c6f967f5_69707c12981aec14c07d4771",
+    "expectedTopicIds": ["6a7f30d5e81af122188fb95d", "6a7f30bfe81af122188fb957"]
+  },
+  {
+    "question": "what did we decide about the car?",
+    "conversationKey": "dm:694ccd8455d03db1c6f967f5_69707c12981aec14c07d4771",
+    "expectedTopicIds": [],
+    "note": "cross-conversation isolation — the car topic only exists in the Labhanshu/Shubhanshu conversation"
+  },
+  {
+    "question": "what book was recommended?",
+    "conversationKey": "dm:694ccd8455d03db1c6f967f5_69526cf86596c8607b82f2f9",
+    "expectedTopicIds": ["6a7f30eee81af122188fb95f"]
+  },
+  {
+    "question": "any recommendations for what to read?",
+    "conversationKey": "dm:694ccd8455d03db1c6f967f5_69526cf86596c8607b82f2f9",
+    "expectedTopicIds": ["6a7f30eee81af122188fb95f"]
+  },
+  {
+    "question": "what's wrong with the car?",
+    "conversationKey": "dm:694ccd8455d03db1c6f967f5_69526cf86596c8607b82f2f9",
+    "expectedTopicIds": ["6a7f30f8e81af122188fb961"]
+  },
+  {
+    "question": "when are we meeting to study?",
+    "conversationKey": "dm:694ccd8455d03db1c6f967f5_69526cf86596c8607b82f2f9",
+    "expectedTopicIds": ["6a7f3102e81af122188fb963"]
+  },
+  {
+    "question": "what are we studying for the exam?",
+    "conversationKey": "dm:694ccd8455d03db1c6f967f5_69526cf86596c8607b82f2f9",
+    "expectedTopicIds": ["6a7f3102e81af122188fb963"]
+  },
+  {
+    "question": "are we going hiking this weekend?",
+    "conversationKey": "dm:694ccd8455d03db1c6f967f5_69526cf86596c8607b82f2f9",
+    "expectedTopicIds": [],
+    "note": "cross-conversation isolation — hiking only exists in the Labhanshu/Dhruv conversation"
+  },
+  {
+    "question": "what gift are we getting sarah?",
+    "conversationKey": "dm:694ccd8455d03db1c6f967f5_69908caeec06dea68eed8213",
+    "expectedTopicIds": ["6a7f2c33592270518bd1450a"]
+  },
+  {
+    "question": "should we get a gift card for sarah?",
+    "conversationKey": "dm:694ccd8455d03db1c6f967f5_69908caeec06dea68eed8213",
+    "expectedTopicIds": ["6a7f2c33592270518bd1450a"]
+  },
+  {
+    "question": "are we cancelling netflix?",
+    "conversationKey": "dm:694ccd8455d03db1c6f967f5_69908caeec06dea68eed8213",
+    "expectedTopicIds": ["6a7f2c59592270518bd1450b"]
+  },
+  {
+    "question": "which trail are we hiking?",
+    "conversationKey": "dm:694ccd8455d03db1c6f967f5_69908caeec06dea68eed8213",
+    "expectedTopicIds": ["6a7f3113e81af122188fb965"]
+  },
+  {
+    "question": "what did we decide about the manali trip?",
+    "conversationKey": "dm:694ccd8455d03db1c6f967f5_69908caeec06dea68eed8213",
+    "expectedTopicIds": [],
+    "note": "cross-conversation isolation — Manali only exists in the Labhanshu/Umang conversation"
+  },
+  {
+    "question": "are we buying a new car?",
+    "conversationKey": "dm:694ccd8455d03db1c6f967f5_69707c12981aec14c07d4771",
+    "expectedTopicIds": [],
+    "note": "pure negative case — this was never discussed in any conversation"
+  }
+]

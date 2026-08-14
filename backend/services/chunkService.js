@@ -1,7 +1,9 @@
   import Chunk from "../models/ChunkMode.js"
   import { chunkQueue } from "../queues/chunkQueue.js"
 
-  const CHUNK_CLOSE_DELAY_MS = 10 * 60 * 1000
+  const CHUNK_CLOSE_DELAY_MS = process.env.CHUNK_CLOSE_DELAY_MS_OVERRIDE
+    ? parseInt(process.env.CHUNK_CLOSE_DELAY_MS_OVERRIDE)
+    : 10 * 60 * 1000
   const MAX_MESSAGES_PER_CHUNK = 15
 
   export async function appendMessageToChunk({ message, participants, conversationKey }) {

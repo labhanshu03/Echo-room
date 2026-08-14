@@ -2,18 +2,15 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from bson import ObjectId
 
-from app.db import chunks_collection, topics_collection
+from app.db import chunks_collection
 from app.services.embedding import embed_text
-from app.services.topic_matching import cosine_similarity, match_or_create_topic
+from app.services.topic_matching import match_or_create_topic
 from app.services.llm import generate_summary
 from app.services.segmentation import segment_chunk_entries
+from app.services.retrieval import retrieve_relevant_chunks, build_prompt
 from app.auth import verify_internal_token
 
 app = FastAPI()
-
-CANDIDATE_TOPICS_LIMIT = 10
-TOPIC_SIMILARITY_THRESHOLD = 0.5
-TOP_CHUNKS = 5
 
 
 @app.get("/health")
@@ -69,7 +66,19 @@ async def process_chunk(payload: ProcessChunkRequest):
         )
         embedding = embed_text(embedding_text)
 
+        insert_result = await chunks_collection.insert_one({
+            "entries": segment_entries,
+            "embeddingText": embedding_text,
+            "embedding": embedding,
+            "participants": chunk["participants"],
+            "conversationKey": chunk["conversationKey"],
+            "status": "closed",
+            "topicId": None
+        })
+        segment_chunk_id = insert_result.inserted_id
+
         segment_chunk = {
+            "_id": segment_chunk_id,
             "entries": segment_entries,
             "embeddingText": embedding_text,
             "embedding": embedding,
@@ -78,11 +87,13 @@ async def process_chunk(payload: ProcessChunkRequest):
         }
 
         topic_id = await match_or_create_topic(segment_chunk)
-        segment_chunk["topicId"] = topic_id
-        segment_chunk["status"] = "closed"
 
-        insert_result = await chunks_collection.insert_one(segment_chunk)
-        split_chunk_ids.append(insert_result.inserted_id)
+        await chunks_collection.update_one(
+            {"_id": segment_chunk_id},
+            {"$set": {"topicId": topic_id}}
+        )
+
+        split_chunk_ids.append(segment_chunk_id)
 
     await chunks_collection.update_one(
         {"_id": ObjectId(payload.chunkId)},
@@ -119,81 +130,14 @@ async def query(payload: QueryRequest):
     if authorized_chunk is None:
         raise HTTPException(status_code=403, detail="Not authorized for this conversation")
 
-    query_embedding = embed_text(payload.question)
-
-    pipeline = [
-        {
-            "$vectorSearch": {
-                "index": "topics_vector_index",
-                "path": "centroidEmbedding",
-                "queryVector": query_embedding,
-                "filter": {"conversationKey": payload.conversationKey},
-                "numCandidates": 50,
-                "limit": CANDIDATE_TOPICS_LIMIT
-            }
-        },
-        {
-            "$addFields": {
-                "score": {"$meta": "vectorSearchScore"}
-            }
-        }
-    ]
-    candidate_topics = await topics_collection.aggregate(pipeline).to_list(length=None)
-
-    qualifying_topics = [t for t in candidate_topics if t["score"] >= TOPIC_SIMILARITY_THRESHOLD]
+    qualifying_topics, top_chunks = await retrieve_relevant_chunks(
+        payload.conversationKey, payload.question
+    )
 
     if not qualifying_topics:
         return {"answer": "I don't have any relevant conversation history to answer that."}
 
-    pooled_chunk_ids = {}
-    for topic in qualifying_topics:
-        for chunk_id in topic["chunkRefs"]:
-            pooled_chunk_ids[str(chunk_id)] = chunk_id
-
-    candidate_chunks = await chunks_collection.find(
-        {"_id": {"$in": list(pooled_chunk_ids.values())}}
-    ).to_list(length=None)
-
-    scored_chunks = [
-        (cosine_similarity(query_embedding, chunk["embedding"]), chunk)
-        for chunk in candidate_chunks
-    ]
-    scored_chunks.sort(key=lambda pair: pair[0], reverse=True)
-    top_chunks = [chunk for _, chunk in scored_chunks[:TOP_CHUNKS]]
-    top_chunks.sort(key=lambda chunk: chunk["entries"][0]["timestamp"])
-
-    contributing_topic_ids = {chunk["topicId"] for chunk in top_chunks}
-    summary_sections = [
-        f"Topic: {topic['summary']}"
-        for topic in qualifying_topics
-        if topic["_id"] in contributing_topic_ids
-    ]
-    summary_text = "\n\n".join(summary_sections)
-
-    context_lines = []
-    for chunk in top_chunks:
-        sorted_entries = sorted(chunk["entries"], key=lambda e: e["timestamp"])
-        for entry in sorted_entries:
-            context_lines.append(f"[{entry['timestamp']}] [{entry['senderId']}]: {entry['text']}")
-    context_text = "\n".join(context_lines)
-
-    prompt = f"""You are answering a question about a real conversation history between the user and other people. Use ONLY the conversation excerpts provided below.
-
-Rules:
-- If later messages update, correct, or reverse something said earlier, treat the most recent one as the current/true state.
-- If the conversation touches multiple related subjects, use whichever parts are actually relevant to the question.
-- If the provided context does not contain enough information to answer, say so clearly instead of guessing.
-
---- Summaries (older history, may span multiple related topics) ---
-{summary_text}
-
---- Relevant messages (chronological) ---
-{context_text}
-
---- Question ---
-{payload.question}
-"""
-
+    prompt = build_prompt(qualifying_topics, top_chunks, payload.question)
     answer = await generate_summary(prompt)
 
     return {"answer": answer}

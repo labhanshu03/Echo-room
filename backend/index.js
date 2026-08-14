@@ -9,7 +9,6 @@ import contactsRoutes from "./routes/contactRoutes.js"
 import setupSocket from "./socket.js"
 import { messagesRoutes } from "./routes/MessagesRoutes.js"
 import channelRoutes from "./routes/ChannelRoutes.js"
-import { httpMetricsMiddleware, register } from "./middlewares/metrics.js"
 
 
 const app=express()
@@ -21,8 +20,6 @@ app.use(cors({
     credentials:true,
 
 }))
-
-app.use(httpMetricsMiddleware)
 
 app.use(express.static("public"))
 
@@ -38,15 +35,9 @@ app.use("/api/channel",channelRoutes)
 app.get("/",(req,res)=>{
       res.json({ message: 'Server is running!' });
 })
-
-// Prometheus scrapes this endpoint. It's plain text, not JSON.
-app.get("/metrics", async (req, res) => {
-    res.set("Content-Type", register.contentType)
-    res.end(await register.metrics())
-})
 const server=app.listen(port,()=>{
     connectDb()
-      
+
      console.log("server started at port" + port)
 })
 

@@ -41,6 +41,9 @@ def _parse_and_validate_groups(raw_response, entry_count):
         parsed = json.loads(raw_response[json_start:json_end])
         groups = parsed["groups"]
 
+        if any(len(group) == 0 for group in groups):
+            return None
+
         all_indices = [i for group in groups for i in group]
         if sorted(all_indices) != list(range(entry_count)):
             return None
