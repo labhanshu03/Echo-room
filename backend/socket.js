@@ -124,6 +124,8 @@ import {Server as SocketIoServer} from "socket.io"
 import Message from "./models/MessageModel.js"
 import Channel from "./models/ChannelModel.js"
 import Redis from "ioredis"
+  import { appendMessageToChunk } from "./services/chunkService.js"
+  import { getDmConversationKey, getChannelConversationKey } from "./utils/conversationKey.js"
 
 
 const setupSocket=(server)=>{
@@ -257,6 +259,12 @@ sub.on("message",async(channel,message)=>{
      const sendMessage=async(message)=>{
         
             const createdMessage=await Message.create(message)
+            const conversationKey = getDmConversationKey(createdMessage.sender, createdMessage.recipient)
+         await appendMessageToChunk({
+             message: createdMessage,
+             participants: [createdMessage.sender, createdMessage.recipient],
+             conversationKey
+         })
 
             // Publish to Redis - all servers (including this one) will receive via subscriber
             await pub.publish("direct-message",JSON.stringify({
@@ -282,10 +290,15 @@ sub.on("message",async(channel,message)=>{
             fileUrl
          })
          
-         await Channel.findByIdAndUpdate(channelId,{
+         const channel = await Channel.findByIdAndUpdate(channelId,{
             $push:{messages:createdMessage._id},
          })
-
+      const conversationKey = getChannelConversationKey(channelId)
+      await appendMessageToChunk({
+          message: createdMessage,
+          participants: channel.members,
+          conversationKey
+      })
          // Publish to Redis - all servers will receive via subscriber
          await pub.publish("channel-message",JSON.stringify({
             messageId:createdMessage._id.toString(),

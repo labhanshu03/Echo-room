@@ -1,20 +1,61 @@
-services:
- backend:
-   build: ./backend
-   ports:
-     - "8000:8000"
-   networks: 
-     - echo-room-network
+  services:
+    backend:
+      build: ./backend
+      ports:
+        - "8000:8000"
+      env_file:
+        - ./backend/.env
+      environment:
+        RAG_SERVICE_URL: http://rag-service:8000
+      networks:
+        - echo-room-network
+      depends_on:
+        - rag-service
 
-    
- frontend:  
-   build: ./frontend
-   ports:
-     - "5173:5173"
-   networks:
-     - echo-room-network
+    worker:
+      build: ./backend
+      command: node workers/chunkWorker.js
+      env_file:
+        - ./backend/.env
+      environment:
+        RAG_SERVICE_URL: http://rag-service:8000
+      networks:
+        - echo-room-network
+      depends_on:
+        - rag-service
 
+    rag-service:
+      build: ./rag-service
+      ports:
+        - "8010:8000"
+      env_file:
+        - ./rag-service/.env
+      environment:
+        OLLAMA_BASE_URL: http://ollama:11434
+      networks:
+        - echo-room-network
+      depends_on:
+        - ollama
 
-networks:
-  echo-room-network:
-    driver: bridge
+    ollama:
+      image: ollama/ollama
+      ports:
+        - "11434:11434"
+      volumes:
+        - ollama_data:/root/.ollama
+      networks:
+        - echo-room-network
+
+    frontend:
+      build: ./frontend
+      ports:
+        - "5173:5173"
+      networks:
+        - echo-room-network
+
+  networks:
+    echo-room-network:
+      driver: bridge
+
+  volumes:
+    ollama_data:

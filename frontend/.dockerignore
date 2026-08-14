@@ -8,8 +8,7 @@ build
 out
 
 # Environment files
-.env
-.env.*
+
 *.local
 
 # Logs
