@@ -47,6 +47,7 @@ export const signUp = async (req,res)=>{
 
 
     }catch(error){
+        console.log("signup error:", error)
         return res.status(500).json({message:"Internal server error signup failed"})
     }
 }
@@ -94,6 +95,7 @@ export const login= async (req,res)=>{
 
 
     }catch(error){
+        console.log("login error:", error)
         return res.status(500).json({message:"Internal server error signup failed"})
     }
 }

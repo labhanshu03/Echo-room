@@ -2,6 +2,7 @@ import { Avatar, AvatarImage } from '@/components/ui/avatar'
 import { getColor } from '@/lib/utils'
 import { useChatStore } from '@/store/slices/auth-slice'
 import {RiCloseFill} from "react-icons/ri"
+import AskAiDialog from './AskAiDialog'
 
 function ChatHeader() {
 
@@ -43,6 +44,7 @@ function ChatHeader() {
             </div>
 
             <div className='flex items-center justify-center gap-5'>
+                <AskAiDialog selectedChatType={selectedChatType} selectedChatData={selectedChatData} />
                 <button onClick={closeChat} className='text-neutral-500 focus:border-none focus:outline-none focus:text-white duraion-300 transition-all'>
                     <RiCloseFill className='text-3xl'/>
                 </button>

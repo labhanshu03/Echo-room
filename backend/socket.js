@@ -126,6 +126,7 @@ import Channel from "./models/ChannelModel.js"
 import Redis from "ioredis"
   import { appendMessageToChunk } from "./services/chunkService.js"
   import { getDmConversationKey, getChannelConversationKey } from "./utils/conversationKey.js"
+  import { activeSocketConnections, messagesSentTotal } from "./middlewares/metrics.js"
 
 
 const setupSocket=(server)=>{
@@ -274,6 +275,7 @@ sub.on("message",async(channel,message)=>{
             }))
             
             console.log(`Published direct message to Redis: ${createdMessage._id}`)
+            messagesSentTotal.inc({ type: "direct" })
 
      }
 
@@ -306,6 +308,7 @@ sub.on("message",async(channel,message)=>{
          }))
          
          console.log(`Published channel message to Redis: ${createdMessage._id}`)
+         messagesSentTotal.inc({ type: "channel" })
      }
 
      io.on("connection",(socket)=>{
@@ -317,11 +320,15 @@ sub.on("message",async(channel,message)=>{
         }else{
             console.log("user id not provided during connection")
         }
-            
+        activeSocketConnections.inc()
+
         socket.on("sendMessage",sendMessage)
         socket.on("send-channel-message",sendChannelMessage)
 
-        socket.on("disconnect",()=>disconnect(socket))
+        socket.on("disconnect",()=>{
+            activeSocketConnections.dec()
+            disconnect(socket)
+        })
      })
 
 

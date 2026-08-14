@@ -13,7 +13,7 @@ export const authDataContext=createContext<AuthContextType|undefined>(undefined)
 
 function AuthContext({children}:AuthProviderProps) {
 
-    const serverUrl="https://echo-room-backend-4gzw.onrender.com"
+    const serverUrl=import.meta.env.VITE_SERVER_URL
       const [authChecked, setAuthChecked] = useState(false)
 
     const value={

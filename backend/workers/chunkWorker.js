@@ -1,31 +1,28 @@
-  import { Worker } from "bullmq"
-  import redisConnection from
-  "../config/redisConnection.js"
-  import axios from "axios"
+import "dotenv/config"
+import { Worker } from "bullmq"
+import axios from "axios"
+import redisConnection from "../config/redisConnection.js"
 
-  const worker = new Worker(
-      "chunk-processing",
-      async (job) => {
-          console.log(`Processing job ${job.id} for
-  chunk ${job.data.chunkId}`)
-          // real logic (calling the Python service)
-             await axios.post(`${process.env.RAG_SERVICE_URL}/process-chunk`, {
-              chunkId: job.data.chunkId
-          })
+const worker = new Worker(
+    "chunk-processing",
+    async (job) => {
+        console.log(`Processing job ${job.id} for chunk ${job.data.chunkId}`)
 
-          console.log(`Chunk ${job.data.chunkId} sent to RAG service`)
-  
-      },
-      { connection: redisConnection }
-  )
+        await axios.post(`${process.env.RAG_SERVICE_URL}/process-chunk`, {
+            chunkId: job.data.chunkId
+        })
 
-  worker.on("completed", (job) => {
-      console.log(`Job ${job.id} completed`)
-  })
+        console.log(`Chunk ${job.data.chunkId} sent to RAG service`)
+    },
+    { connection: redisConnection }
+)
 
-  worker.on("failed", (job, err) => {
-      console.error(`Job ${job?.id} failed:
-  ${err.message}`)
-  })
+worker.on("completed", (job) => {
+    console.log(`Job ${job.id} completed`)
+})
 
-  console.log("Chunk worker started, waiting forjobs...")
+worker.on("failed", (job, err) => {
+    console.error(`Job ${job?.id} failed: ${err.message}`)
+})
+
+console.log("Chunk worker started, waiting for jobs...")
