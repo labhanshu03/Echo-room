@@ -1,7 +1,7 @@
-# 💬 Echo-room (Horizontally scaled using redis pub sub) 
-## (MERN, Redis(pub/sub), Docker-compose, Socket.io, Typescript, Zustand, Shadcn(UI))
+# 💬 Echo-room (Horizontally scaled using Redis Pub/Sub, with AI-powered conversation search)
+## (MERN, Redis(pub/sub), Docker-compose, Socket.io, Typescript, Zustand, Shadcn(UI), Python, FastAPI, Ollama, RAG)
 
-### Real-Time Messaging Platform Built for Modern Communication
+### Real-Time Messaging Platform with AI-Powered Conversation Search
 
 A powerful, feature-rich real-time messaging platform built with the MERN stack and TypeScript. Echo-room delivers seamless communication with advanced group chat capabilities, comprehensive file sharing, and cross-platform compatibility.
 
