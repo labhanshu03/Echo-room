@@ -124,9 +124,9 @@ import {Server as SocketIoServer} from "socket.io"
 import Message from "./models/MessageModel.js"
 import Channel from "./models/ChannelModel.js"
 import Redis from "ioredis"
-  import { appendMessageToChunk } from "./services/chunkService.js"
-  import { getDmConversationKey, getChannelConversationKey } from "./utils/conversationKey.js"
-
+import { appendMessageToChunk } from "./services/chunkService.js"
+import { getDmConversationKey, getChannelConversationKey } from "./utils/conversationKey.js"
+import { activeSocketConnections, messagesSentTotal } from "./middlewares/metrics.js"
 
 const setupSocket=(server)=>{
      const io=new SocketIoServer(server,{
@@ -272,9 +272,8 @@ sub.on("message",async(channel,message)=>{
                 senderId:message.sender,
                 recipientId:message.recipient
             }))
-            
+            messagesSentTotal.inc({ type: "direct" })
             console.log(`Published direct message to Redis: ${createdMessage._id}`)
-
      }
 
      const sendChannelMessage=async(message)=>{
@@ -304,6 +303,8 @@ sub.on("message",async(channel,message)=>{
             messageId:createdMessage._id.toString(),
             channelId:channelId
          }))
+
+           messagesSentTotal.inc({ type: "channel" })
          
          console.log(`Published channel message to Redis: ${createdMessage._id}`)
      }

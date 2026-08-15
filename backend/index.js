@@ -9,7 +9,7 @@ import contactsRoutes from "./routes/contactRoutes.js"
 import setupSocket from "./socket.js"
 import { messagesRoutes } from "./routes/MessagesRoutes.js"
 import channelRoutes from "./routes/ChannelRoutes.js"
-
+import {httpMetricsMiddleware, register} from "./middlewares/metrics.js"
 
 const app=express()
 const port=process.env.PORT ||5000
@@ -20,7 +20,7 @@ app.use(cors({
     credentials:true,
 
 }))
-
+app.use(httpMetricsMiddleware)
 app.use(express.static("public"))
 
 
@@ -31,6 +31,12 @@ app.use("/api/contacts",contactsRoutes)
 app.use("/api/messages",messagesRoutes)
 app.use("/api/channel",channelRoutes)
 
+
+
+app.get("/metrics", async (req, res) => {
+    res.set("Content-Type", register.contentType)
+    res.end(await register.metrics())
+})
 
 app.get("/",(req,res)=>{
       res.json({ message: 'Server is running!' });
