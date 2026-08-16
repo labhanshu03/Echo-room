@@ -1,9 +1,9 @@
 # 💬 Echo-room (Horizontally scaled using Redis Pub/Sub, with AI-powered conversation search)
-## (MERN, Redis(pub/sub), Docker-compose, Socket.io, Typescript, Zustand, Shadcn(UI), Python, FastAPI, Ollama, RAG)
+## (MERN, Redis(pub/sub), Docker-compose, Socket.io, Typescript, Zustand, Shadcn(UI), Python, FastAPI, Ollama, RAG, Prometheus, Grafana)
 
 ### Real-Time Messaging Platform with AI-Powered Conversation Search
 
-A powerful, feature-rich real-time messaging platform built with the MERN stack and TypeScript. Echo-room delivers seamless communication with advanced group chat capabilities, comprehensive file sharing, and cross-platform compatibility.
+A powerful, feature-rich real-time messaging platform built with the MERN stack and TypeScript. Echo-room delivers seamless communication with advanced group chat capabilities, comprehensive file sharing, cross-platform compatibility, and built-in observability via Prometheus and Grafana.
 
 [![GitHub Stars](https://img.shields.io/github/stars/labhanshu03/Echo-room?style=social)](https://github.com/labhanshu03/Echo-room)
 [![GitHub Forks](https://img.shields.io/github/forks/labhanshu03/Echo-room?style=social)](https://github.com/labhanshu03/Echo-room/fork)
@@ -11,6 +11,8 @@ A powerful, feature-rich real-time messaging platform built with the MERN stack 
 [![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=flat&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
 [![Python](https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&logoColor=white)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![Prometheus](https://img.shields.io/badge/Prometheus-E6522C?style=flat&logo=prometheus&logoColor=white)](https://prometheus.io/)
+[![Grafana](https://img.shields.io/badge/Grafana-F46800?style=flat&logo=grafana&logoColor=white)](https://grafana.com/)
 
 ---
 
