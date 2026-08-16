@@ -62,6 +62,11 @@ A powerful, feature-rich real-time messaging platform built with the MERN stack 
 - Consistent experience across all devices
 - Touch-optimized interface
 
+### 📊 Monitoring & Observability
+- **Prometheus** scrapes live metrics from the backend every 15s — HTTP request rate/latency, active Socket.IO connections, chat message throughput, and Node.js process health (CPU, memory, event loop lag)
+- **Grafana** auto-provisions a Prometheus data source and a ready-made "Echo Room Overview" dashboard on startup — no manual setup required
+- Runs as part of the existing `docker-compose` stack, alongside the app itself
+
 ---
 
 ## 🚀 Quick Start
@@ -180,6 +185,40 @@ Ensure you have the following installed:
 
 ---
 
+## 📊 Monitoring (Prometheus & Grafana)
+
+The backend exposes a Prometheus-compatible `/metrics` endpoint, and the full stack ships with Prometheus and Grafana pre-configured in `docker-compose.yaml`.
+
+### Running it
+
+```bash
+docker compose up --build
+```
+
+This starts `prometheus` and `grafana` alongside the rest of the stack — no separate setup needed.
+
+### Accessing the dashboards
+
+| Service | URL | Credentials |
+|---|---|---|
+| Prometheus (raw metrics/targets) | `http://localhost:9090` | — |
+| Grafana (dashboards) | `http://localhost:3001` | `admin` / `admin` (change on first login) |
+| Backend raw metrics | `http://localhost:8000/metrics` | — |
+
+Grafana auto-loads a **"Echo Room Overview"** dashboard on startup (via provisioning files in `monitoring/grafana/provisioning/`) — no manual data source or dashboard import required. It includes panels for:
+- HTTP requests/sec (by route + status code)
+- HTTP request latency (p95)
+- Active Socket.IO connections
+- Chat messages/sec (direct vs. channel)
+- Backend process memory (RSS)
+- Node.js event loop lag (p99)
+
+### How it works
+
+Prometheus scrapes `backend:8000/metrics` every 15 seconds (config: `monitoring/prometheus/prometheus.yml`) and stores the results as time series. Grafana queries Prometheus (PromQL) to render the dashboard panels. Metrics are collected in-process via [`prom-client`](https://github.com/siimon/prom-client) — see `backend/middlewares/metrics.js`.
+
+---
+
 ## 🛠️ Tech Stack
 
 ### Frontend
@@ -203,6 +242,11 @@ Ensure you have the following installed:
 - **Multer** - File upload handling
 - **Cloudinary** - Cloud storage for media files
 - **BullMQ + Redis** - Async job queue for debounced chunk processing
+- **prom-client** - Exposes app metrics (HTTP, sockets, messages, process health) for Prometheus
+
+### Monitoring
+- **Prometheus** - Scrapes and stores time-series metrics from the backend
+- **Grafana** - Dashboards/visualization, auto-provisioned with the Prometheus data source
 
 ### AI / RAG Service (Python)
 - **FastAPI** - Async Python web framework serving the RAG endpoints
@@ -271,6 +315,14 @@ Echo-room/
 │   │   └── run_eval.py         # Scores retrieval against test_cases.json
 │   ├── requirements.txt
 │   └── Dockerfile
+│
+├── monitoring/                  # Prometheus & Grafana configuration
+│   ├── prometheus/
+│   │   └── prometheus.yml      # Scrape config (targets, interval)
+│   └── grafana/
+│       └── provisioning/
+│           ├── datasources/    # Auto-registers Prometheus as a data source
+│           └── dashboards/     # Auto-loaded "Echo Room Overview" dashboard
 │
 ├── docs/
 │   └── rag-architecture.html   # Full RAG design writeup and interview reference
